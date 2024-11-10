@@ -1,0 +1,124 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: black;
+}
+.searchForm
+{
+    display:flex;
+    justify-content: center;
+    margin-top:100px;
+    background-color: transparent !important;
+}
+.searchButton
+{
+    color:#494949;
+    text-decoration:none;
+    background:white;
+    border-radius:10px;
+    margin-left:6px;
+    margin-top: 0.7rem;;
+    padding:2px 12px;
+    display:inline-block;
+    border:2px solid #494949;
+    transition:all 0.4 ease 0s;
+    height:3rem;
+}
+.searchButton:hover
+{
+    color:#ffffff;
+    background:#ffca2c;
+    border-color:#ffca2c;
+    transition:all 0.4 ease 0s;
+}
+.searchInput
+{
+    width:260px;
+    overflow:hidden;
+    font-size:20px;
+    margin:8px 0;
+    padding:8px 12px;
+    border-bottom:3px solid #ffca2c;
+    border-radius: 2rem;
+    color:white;
+    outline:none;
+    background:none;
+}
+input{
+    border:none;
+}
+.temp
+{
+    text-align: center;
+    background-color: transparent !important;
+}
+
+.currentTemp{
+    border: 1px solid #ffca2c;
+    padding: 30px 20px;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    font-size:1.5rem;
+    text-align: center;
+    margin-bottom: 20px;
+
+}
+
+.temp .tempUnit
+{
+    font-size:1.5rem;
+    color:white;
+    background-color: transparent !important;
+}
+.temp .tempValue
+{
+    font-size:2rem;
+    color:white;
+    background-color: transparent !important;
+}
+.location
+{
+    font-size:2.5rem;
+    color:#ffffff;
+    text-align:center;
+    background-color: transparent !important;
+}
+
+
+.tempIcon
+{
+    margin:1rem;
+    width:40%;
+    height:auto;
+    background-color: transparent !important;
+}
+
+.outerContainer
+{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    overflow: auto;
+    max-height: calc(100vh - 70vh);
+}
+
+.outerContainerTemp
+{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    overflow: auto;
+    max-height: calc(100vh - 50vh);
+}
+.container{
+    border:1px solid #ffca2c;
+    border-radius: 0.5rem;
+    width:fit-content;
+    padding: 1rem;
+    margin: 1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
