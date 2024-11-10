@@ -1,4 +1,4 @@
-**Weather Now**
+## Weather Now
 
 Weather Now is a responsive weather app that provides users with current weather conditions, 5-day forecasts, and detailed weather information like temperature, humidity, pressure, and wind speed. Users can search for weather by city or allow the app to detect their current location.
 
@@ -10,7 +10,9 @@ Location Access: Automatically fetches weather based on the user’s current loc
 
 ## Tech Stack
 Frontend: HTML, CSS, JavaScript (React)
+
 API: Open-Meteo API
+
 Geolocation: Browser geolocation API
 
 ![image](https://github.com/user-attachments/assets/9a9a17b2-b136-4a7f-b791-173a38324e67)
