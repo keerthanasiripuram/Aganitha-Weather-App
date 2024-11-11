@@ -19,7 +19,7 @@ export default function Weather() {
   const [city, setCity] = useState('')
   const [temp, setTemp] = useState('')
   const [currDate, setCurrDate] = useState(new Date())
-  const [foreCastedTemp, setForeCastedTemp] = useState({ icons: [], tempArr: [] })
+  const [foreCastedTemp, setForeCastedTemp] = useState({ tempArr: [], avgTempArray:[] })
   const [allWeatherDetails, setAllWeatherDetails] = useState({ time: [], humidity: [], pressure: [], wind_speed: [] })
 
   //Carousel settings
@@ -74,11 +74,17 @@ export default function Weather() {
       console.log(response.data)
       setTemp(response.data.daily.temperature_2m_min[0] + " - " + response.data.daily.temperature_2m_max[0])
       let tempArray = []
+      let avgTempArray = [];
       for(let index = 1; index < response.data.daily.temperature_2m_max.length; index++){
-        tempArray.push(response.data.daily.temperature_2m_min[index].toString() + " - " + response.data.daily.temperature_2m_max[index].toString())
+        const minTemp = response.data.daily.temperature_2m_min[index];
+        const maxTemp = response.data.daily.temperature_2m_max[index];
+      
+      tempArray.push(minTemp.toString() + " - " + maxTemp.toString());
+        
+        avgTempArray.push((minTemp + maxTemp) / 2);
       }
       response.data.daily.time.shift()
-      setForeCastedTemp({ ...foreCastedTemp, tempArr: tempArray, time: response.data.daily.time})
+      setForeCastedTemp({ ...foreCastedTemp, tempArr: tempArray,  avgTempArray: avgTempArray,time: response.data.daily.time})
     }
   }
 
@@ -112,10 +118,23 @@ export default function Weather() {
         return "🌧️";
     } else if (humidity > 85 && pressure < 995 && windSpeed > 15) {
         return "🌩️🌧️";
+    } else if (humidity > 90 && windSpeed < 5) {
+        return "🌫️"; 
     } else {
         return "🌥️";
     }
 }
+
+const getTempIcon = (temperature) => {
+  console.log("temp",temperature)
+  if (temperature >= 30) return "🔥"; // Hot
+  if (temperature >= 20) return "☀️"; // Warm/Sunny
+  if (temperature >= 15) return "🌦️"; // Mild, with a chance of rain
+  if (temperature >= 10) return "⛅"; // Cool/Partly Cloudy
+  if (temperature >= 5) return "🌫️"; // Chilly/Foggy
+  if (temperature < 5) return "❄️"; // Cold
+  return "☀️"; // Default Sunny icon
+};
 
   const getDay = (date, next=false) => {
     if(next)
@@ -167,64 +186,141 @@ export default function Weather() {
     }
   }
 
-  return (
-    <>
-      {/* Input details */}
-      <form className={styles.searchForm}>
-        <input type="search" className={styles.searchInput} value={city} onChange={(e) => setCity(e.target.value)} placeholder="Enter the city" required autocomplete="off" />
-        <br />
-        <br />
-        <button className={styles.searchButton} onClick={(e) => { e.preventDefault(); searchButton(city) }}>Search</button>
-      </form>
+return (
+  <>
+    {/* Input details */}
+    <form className={styles.searchForm}>
+      <input
+        type="search"
+        className={styles.searchInput}
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+        placeholder="Enter the city"
+        required
+        autoComplete="off"
+      />
+      <br />
+      <br />
+      <button
+        className={styles.searchButton}
+        onClick={(e) => {
+          e.preventDefault();
+          searchButton(city);
+        }}
+      >
+        Search
+      </button>
+    </form>
 
-      {/*Data Loading*/}
-      {isLoading ? <Loader /> :
-        <div style={{ margin: "50px", color: "white" }}>
-          <Slider {...settings}>
-            {temp && <div style={{ border: "2px solid red", padding: "20px", textAlign: "center" }}>
+    {/* Data Loading */}
+    {isLoading ? (
+      <Loader />
+    ) : (
+      <div style={{ margin: "50px", color: "white" }}>
+        <Slider {...settings}>
+          {temp && (
+            <div
+              style={{
+                border: "2px solid red",
+                padding: "20px",
+                textAlign: "center",
+              }}
+            >
               <div className={styles.location}>
-                <p className={styles.textStyle} style={{fontSize: "20px", marginBottom: "10px"}}>{selectedCity} {selectedFlag}</p>
+                <p
+                  className={styles.textStyle}
+                  style={{ fontSize: "20px", marginBottom: "10px" }}
+                >
+                  {selectedCity} {selectedFlag}
+                </p>
               </div>
-      
-              <div className={styles.currentTemp}>
-                <p style={{fontSize: "50px"}}>☀️</p>
 
-                <p className={styles.textStyle} style={{marginBottom: "10px"}}><span className={styles.tempValue}>{temp}</span><span className={styles.tempUnit}>&#8451;</span></p>
+              <div className={styles.currentTemp}>
+                {/* Current temperature icon based on weather */}
+                <p style={{ fontSize: "50px" }}>
+                {foreCastedTemp.avgTempArray.length > 0 && getTempIcon(foreCastedTemp.avgTempArray[0])}
+
+                </p>
+
+                <p className={styles.textStyle} style={{ marginBottom: "10px" }}>
+                  <span className={styles.tempValue}>{temp}</span>
+                  <span className={styles.tempUnit}>&#8451;</span>
+                </p>
                 <p className={styles.textStyle}>{getDay(currDate)}</p>
               </div>
-              <h2 className={styles.temp}>ForeCasted Temperature for next {noOfDays - 1} Days</h2>
+              <h2 className={styles.temp}>
+                Forecasted Temperature for next {noOfDays - 1} Days
+              </h2>
               <div className={styles.outerContainer}>
                 {foreCastedTemp.tempArr.map((temp, index) => (
+                  <div key={index} className={styles.container}>
+                    {/* Daily forecast icon based on weather */}
+                    <p style={{ fontSize: "50px" }}>
+                    {foreCastedTemp.avgTempArray.length > 0 && getTempIcon(foreCastedTemp.avgTempArray[index])}
+                  </p>
 
-                  <div className={styles.container}>
-                    <p style={{fontSize: "50px"}}>☀️</p>
-                    <p><span className={styles.tempValue}>{temp}</span><span className={styles.tempUnit}>&#8451;</span></p>
-                    <p><span className={styles.tempValue}>{getDay(new Date(foreCastedTemp.time[index]))}</span></p>
+                    <p>
+                      <span className={styles.tempValue}>{temp}</span>
+                      <span className={styles.tempUnit}>&#8451;</span>
+                    </p>
+                    <p>
+                      <span className={styles.tempValue}>
+                        {getDay(new Date(foreCastedTemp.time[index]))}
+                      </span>
+                    </p>
                   </div>
                 ))}
               </div>
-            </div>}
-            <div>
-              <div className={styles.location}>
-                <p className={styles.textStyle} style={{fontSize: "20px", marginBottom: "10px"}}>{selectedCity} {selectedFlag}</p>
-              </div>
-              <h2 className={styles.temp} style={{marginBottom: "20px"}}>Weather Details - {getDay(currDate)}</h2>
-              {allWeatherDetails.time.length > 0 && (
-                <div className={styles.outerContainerTemp}>
-                  {allWeatherDetails.time.map((time, index) => (
-                    <div key={index} className={styles.container}>
-                      <p style={{fontSize: "50px"}}><strong> {estimateWeather(allWeatherDetails.humidity[index],allWeatherDetails.pressure[index],allWeatherDetails.wind_speed[index])}</strong></p>
-                      <p><strong>Time:</strong> {new Date(time).toLocaleTimeString()}</p>
-                      <p><strong>Humidity:</strong> {allWeatherDetails.humidity[index]} %</p>
-                      <p><strong>Pressure:</strong> {allWeatherDetails.pressure[index]} hPa</p>
-                      <p><strong>Wind Speed:</strong> {allWeatherDetails.wind_speed[index]} km/h</p>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
-          </Slider>
-        </div>}
-    </>
-  )
+          )}
+          <div>
+            <div className={styles.location}>
+              <p
+                className={styles.textStyle}
+                style={{ fontSize: "20px", marginBottom: "10px" }}
+              >
+                {selectedCity} {selectedFlag}
+              </p>
+            </div>
+            <h2 className={styles.temp} style={{ marginBottom: "20px" }}>
+              Weather Details - {getDay(currDate)}
+            </h2>
+            {allWeatherDetails.time.length > 0 && (
+              <div className={styles.outerContainerTemp}>
+                {allWeatherDetails.time.map((time, index) => (
+                  <div key={index} className={styles.container}>
+                    {/* Hourly weather icon */}
+                    <p style={{ fontSize: "50px" }}>
+                      <strong>
+                        {estimateWeather(
+                          allWeatherDetails.humidity[index],
+                          allWeatherDetails.pressure[index],
+                          allWeatherDetails.wind_speed[index]
+                        )}
+                      </strong>
+                    </p>
+                    <p>
+                      <strong>Time:</strong> {new Date(time).toLocaleTimeString()}
+                    </p>
+                    <p>
+                      <strong>Humidity:</strong> {allWeatherDetails.humidity[index]} %
+                    </p>
+                    <p>
+                      <strong>Pressure:</strong> {allWeatherDetails.pressure[index]} hPa
+                    </p>
+                    <p>
+                      <strong>Wind Speed:</strong> {allWeatherDetails.wind_speed[index]} km/h
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </Slider>
+      </div>
+    )}
+  </>
+);
+
 }
+
